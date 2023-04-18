@@ -5,22 +5,28 @@
 function smarty_function_getContentHeading($params, $smarty) {
   global $main;
 
-  $get_inactive = isset($params['get_inactive']) ? $params['get_inactive'] : true;
+  if (isset($params['coID']) && $params['coID'] != '') {
+    $coID = (int)$params['coID'];
 
-  $shop_content_data = $main->getContentData($params['coID'], $lang_id = '', $customers_status = '', $get_inactive);
+    $get_inactive = isset($params['get_inactive']) ? $params['get_inactive'] : true;
 
-  if (!empty($shop_content_data)) {
-    $heading = ($shop_content_data['content_heading'] != '') ? $shop_content_data['content_heading'] : $shop_content_data['content_title'];
+    $shop_content_data = $main->getContentData($coID, $lang_id = '', $customers_status = '', $get_inactive);
 
-    $class = (isset($params['class']) ? ' class="' . $params['class'] . '"' : '');
-    if (isset($params['heading']) && is_numeric($params['heading']) && $params['heading'] >= 1 && $params['heading'] <= 6) {
-      $headingbeginn = '<h' . $params['heading'] . $class . '>';
-      $headingend = '</h' . $params['heading'] . '>';
+    if (is_array($shop_content_data) && count($shop_content_data) > 0) {
+      $heading = ($shop_content_data['content_heading'] != '') ? $shop_content_data['content_heading'] : $shop_content_data['content_title'];
+
+      $class = (isset($params['class']) ? ' class="' . $params['class'] . '"' : '');
+      if (isset($params['heading']) && is_numeric($params['heading']) && $params['heading'] >= 1 && $params['heading'] <= 6) {
+        $headingbeginn = '<h' . $params['heading'] . $class . '>';
+        $headingend = '</h' . $params['heading'] . '>';
+      } else {
+        $headingbeginn = '';
+        $headingend = '';
+      }
+      return $headingbeginn . $heading . $headingend;
     } else {
-      $headingbeginn = '';
-      $headingend = '';
+      return false;
     }
-    return $headingbeginn . $heading . $headingend;
   } else {
     return false;
   }
